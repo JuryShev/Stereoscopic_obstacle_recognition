@@ -1,22 +1,22 @@
-%% Çàãðóçêà ñòåðåîïàðû
+%% Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° ÑÑ‚ÐµÑ€ÐµÐ¾Ð¿Ð°Ñ€Ñ‹
 Left=(imread('left_1.60.jpg'));
 Righ=(imread('righ_1.60.jpg'));
-% èçáàâëåíèå îò èñêæåíèé (îò äèñòîðñèè)
+% Ð¸Ð·Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð¾Ñ‚ Ð¸ÑÐºÐ¶ÐµÐ½Ð¸Ð¹ (Ð¾Ñ‚ Ð´Ð¸ÑÑ‚Ð¾Ñ€ÑÐ¸Ð¸)
 Left=undistortImage(Left, stereoParams2.CameraParameters1);
 Righ=undistortImage(Righ, stereoParams2.CameraParameters2);
 Left_gray=rgb2gray(Left);
 Righ_gray=rgb2gray(Righ);
-% âûðàâíèâàíèå èçîáðàæåíèé
+% Ð²Ñ‹Ñ€Ð°Ð²Ð½Ð¸Ð²Ð°Ð½Ð¸Ðµ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ð¹
 [L,R] = rectifyStereoImages(Left_gray,Righ_gray,stereoParams2);
 
 %% 
-%Èíòåðïîëÿöèÿ èçîáðàæåíèÿ 
+%Ð˜Ð½Ñ‚ÐµÑ€Ð¿Ð¾Ð»ÑÑ†Ð¸Ñ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ 
 L2=imresize(L,0.5,'nearest');
 R2=imresize(R,0.5,'nearest');
-% % %Ìåäèàííàÿ ôèëüòðàöèÿ
+% % %ÐœÐµÐ´Ð¸Ð°Ð½Ð½Ð°Ñ Ñ„Ð¸Ð»ÑŒÑ‚Ñ€Ð°Ñ†Ð¸Ñ
 L2=medfilt2(L2,[7, 7]);
 R2=medfilt2(R2, [7, 7]);
-%% Ðàñ÷åò êàðòû ãëóáèíû èçîáðàæåíèÿ
+%% Ð Ð°ÑÑ‡ÐµÑ‚ ÐºÐ°Ñ€Ñ‚Ñ‹ Ð³Ð»ÑƒÐ±Ð¸Ð½Ñ‹ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ
 disparityRange = [0 80];
 disparityMap = disparity(L2,R2,'BlockSize',...
    9,'DisparityRange',disparityRange );
@@ -26,25 +26,25 @@ disparityMap_G=mat2gray(disparityMap,disparityRange);
 disparityMap_G2 = imfill(disparityMap_G,'holes');
 disparityMap_G2=medfilt2(disparityMap_G2,[5, 5]);
 figure, imshow(disparityMap_G2)
-%% Íàõîæäåíèå óãëîâ â èíòåðåñóþùåé îáëàñòè
+%% ÐÐ°Ñ…Ð¾Ð¶Ð´ÐµÐ½Ð¸Ðµ ÑƒÐ³Ð»Ð¾Ð² Ð² Ð¸Ð½Ñ‚ÐµÑ€ÐµÑÑƒÑŽÑ‰ÐµÐ¹ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸
 points1 = detectHarrisFeatures(L, 'ROI', [991, 367, 1239, 1003 ],'MinQuality', 0.3);
 points2 = detectHarrisFeatures(R, 'ROI',[991, 367, 1239, 1003 ],'MinQuality', 0.3);
-%% Èçâëå÷åíèå ôóíêöèè îêðåñòíîñòè.
+%% Ð˜Ð·Ð²Ð»ÐµÑ‡ÐµÐ½Ð¸Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð¾ÐºÑ€ÐµÑÑ‚Ð½Ð¾ÑÑ‚Ð¸.
 [features1,valid_points1] = extractFeatures(L,points1);
 [features2,valid_points2] = extractFeatures(R,points2);
-%% ñîïàñòîâëåíèå êëþ÷åâûõ òî÷åê
+%% ÑÐ¾Ð¿Ð°ÑÑ‚Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ»ÑŽÑ‡ÐµÐ²Ñ‹Ñ… Ñ‚Ð¾Ñ‡ÐµÐº
 indexPairs = matchFeatures(features1,features2);
 %%
 matchedPoints1 = valid_points1(indexPairs(:,1),:);
 matchedPoints2 = valid_points2(indexPairs(:,2),:);
-%% Âûâîä êîîðäèíàò òî÷åê íà èçîáðàæåíèè
+%% Ð’Ñ‹Ð²Ð¾Ð´ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚ Ñ‚Ð¾Ñ‡ÐµÐº Ð½Ð° Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ð¸
 k1=matchedPoints1.Location;
 k2=matchedPoints2.Location;
-%% òðèàíãóëÿöèÿ
+%% Ñ‚Ñ€Ð¸Ð°Ð½Ð³ÑƒÐ»ÑÑ†Ð¸Ñ
 point3d = triangulate(k1, k2, stereoParams2);
 k1(:,3:4)=20;
 k2(:,3:4)=20;
-%% ñîðòèðîâêà sort_k1
+%% ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ° sort_k1
 
 nn=1;
 for n=1:length(k1)
@@ -57,27 +57,27 @@ for n=1:length(k1)
     end  
 end
 
-%% Ñåãìåíòàöèÿ îáúåêòà
+%% Ð¡ÐµÐ³Ð¼ÐµÐ½Ñ‚Ð°Ñ†Ð¸Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 k1_sort=sortrows(k1_sort,4);
 I=disparityMap_G2;
 I=imresize(I,2,'nearest');
 
-%% Âûäåëåíèå èíòåðåñóþùåé îáëàñòè ïî ÿðêîñòè ïåêñåëÿ
+%% Ð’Ñ‹Ð´ÐµÐ»ÐµÐ½Ð¸Ðµ Ð¸Ð½Ñ‚ÐµÑ€ÐµÑÑƒÑŽÑ‰ÐµÐ¹ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸ Ð¿Ð¾ ÑÑ€ÐºÐ¾ÑÑ‚Ð¸ Ð¿ÐµÐºÑÐµÐ»Ñ
 seedpointR = round(k1_sort(1,2));
 seedpointC = round(k1_sort(1,1));
-%% Ñåãìåíòàöèÿ
+%% Ð¡ÐµÐ³Ð¼ÐµÐ½Ñ‚Ð°Ñ†Ð¸Ñ
 W = graydiffweight(I, seedpointC, seedpointR,'GrayDifferenceCutoff',40);
 figure, imshow(log(W),[])
-%% Ïåðåâîä â áèíàðíîå èçîáðàæåíèå
+%% ÐŸÐµÑ€ÐµÐ²Ð¾Ð´ Ð² Ð±Ð¸Ð½Ð°Ñ€Ð½Ð¾Ðµ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ
 thresh = 0.001;
 BW = imsegfmm(W, seedpointC, seedpointR, thresh);
 figure, imshow(BW)
 title('Segmented Image')
-%% Ìîðôîëîãè÷åñêîå ïðåîáðàçîâàíèå
+%% ÐœÐ¾Ñ€Ñ„Ð¾Ð»Ð¾Ð³Ð¸Ñ‡ÐµÑÐºÐ¾Ðµ Ð¿Ñ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ð½Ð¸Ðµ
 se = strel('disk',4);
 erodedI = imopen(BW,se);
 
-%% Âû÷èñëåíèå ãðàíèö îáëàñòè ñåãìåíòàöèè
+%% Ð’Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ð³Ñ€Ð°Ð½Ð¸Ñ† Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸ ÑÐµÐ³Ð¼ÐµÐ½Ñ‚Ð°Ñ†Ð¸Ð¸
 
 Box=regionprops(erodedI,'BoundingBox');
 for k = 1 : length(Box)
@@ -86,14 +86,14 @@ for k = 1 : length(Box)
   'EdgeColor','r','LineWidth',2 );
 
 end
-%% âû÷èñëåíèå äèñòàíöèè è  ìàñøòàáà ïèêñåëåé
+%% Ð²Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ð´Ð¸ÑÑ‚Ð°Ð½Ñ†Ð¸Ð¸ Ð¸  Ð¼Ð°ÑÑˆÑ‚Ð°Ð±Ð° Ð¿Ð¸ÐºÑÐµÐ»ÐµÐ¹
 distanseInMeters=(point3d(k1_sort(1,3),3)/1000)*1.2;
-scale=abs(point3d(k1_sort(1,3),1)-point3d(k1_sort(2,3),1))/abs(k1(k1_sort(1,3), 1)-k1(k1_sort(2,3), 1));% ìàñøòàá â 1 ïèêñåëü 1.63
-%% Âûîä ðåçóëüòàòà
+scale=abs(point3d(k1_sort(1,3),1)-point3d(k1_sort(2,3),1))/abs(k1(k1_sort(1,3), 1)-k1(k1_sort(2,3), 1));% Ð¼Ð°ÑÑˆÑ‚Ð°Ð± Ð² 1 Ð¿Ð¸ÐºÑÐµÐ»ÑŒ 1.63
+%% Ð’Ñ‹Ð¾Ð´ Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚Ð°
 for k = 1 : length(Box)
 thisBB = Box(k).BoundingBox;
-W=thisBB(1,3)*scale/1000;%äëèííà îáëàñòè
-H=thisBB(1,4)*scale/1000;%âûñîòà îáëàñòè
+W=thisBB(1,3)*scale/1000;%Ð´Ð»Ð¸Ð½Ð½Ð° Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸
+H=thisBB(1,4)*scale/1000;%Ð²Ñ‹ÑÐ¾Ñ‚Ð° Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸
     if W*H>0.01
     distanceAsString = sprintf('Distanse = %0.2fmeters W = %0.2fmeters H = %0.2fmeters', distanseInMeters, W,H);
     L = insertObjectAnnotation(L,'rectangle',thisBB ,distanceAsString,'FontSize', 40, 'LineWidth', 10);
